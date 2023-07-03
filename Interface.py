@@ -2,15 +2,44 @@ import csv
 import tkinter as tk
 import re
 from tkinter import messagebox
+from tkcalendar import DateEntry
 
 ventana= tk.Tk()
-
 canvas = tk.Canvas(ventana, width=400,height=300)
 canvas.pack()
 
-def mostrar_campos():
-    ventana_secundaria = tk.Toplevel(ventana)  # Crea la ventana secundaria
+def confirmar_cierre_ventana():
+    
+    
+    if messagebox.askokcancel("Cerrar", "¿Estás seguro de que quieres cerrar la ventana?"):
+        ventana.destroy()
 
+def mostrar_campos():
+    ventana_secundaria = tk.Toplevel(ventana)
+    ventana_secundaria.lift()  # Elevar la nueva ventana al frente
+    ventana_secundaria.protocol("WM_DELETE_WINDOW", confirmar_cierre_ventana)
+    ventana_secundaria = tk.Toplevel(ventana)  # Crea la ventana secundaria
+     # Función para mostrar los campos del router
+    def mostrar_campos_router():
+        
+        campos_router = ['SN/MAC', 'IP', 'NOMBRE DE RED', 'CONTRASEÑA', 'MARCA', 'INGRESO ONU', 'CODIGO DE BARRA']
+        for campo in campos_router:
+            etiqueta = tk.Label(ventana_secundaria, text=campo)
+            etiqueta.pack()
+
+            entrada = tk.Entry(ventana_secundaria)
+            entrada.pack()
+
+            campos_router_widgets.append((etiqueta, entrada))
+            
+
+    campos_router_widgets = []    
+
+    # Función para ocultar los campos del router
+    def ocultar_campos_router():
+        for etiqueta, entrada in campos_router_widgets:
+            etiqueta.pack_forget()
+            entrada.pack_forget()
     # Función para alternar el estado del botón de servicio de internet
     def alternar_estado():
         estado_actual = servicio_internet_var.get()
@@ -67,11 +96,13 @@ def mostrar_campos():
         if len(codigo) != 5:
             messagebox.showerror('Error', 'El código debe tener 5 dígitos.')
 
+    
+
     etiqueta_FECHA = tk.Label(ventana_secundaria, text="FECHA DE INGRESO")
     etiqueta_FECHA.pack()
-    entrada_FECHA = tk.Entry(ventana_secundaria, validate="key")
-    entrada_FECHA.config(validatecommand=(entrada_FECHA.register(lambda text: text.isdigit() and len(text) == 8), "%P"))
+    entrada_FECHA = DateEntry(ventana_secundaria, date_pattern='dd/mm/yyyy')
     entrada_FECHA.pack()
+
 
     etiqueta_NOMBRES = tk.Label(ventana_secundaria, text="NOMBRES Y APELLIDOS")
     etiqueta_NOMBRES.pack()
@@ -160,26 +191,9 @@ def mostrar_campos():
     boton_guardar.config(command=boton_guardar_click)
     ventana.mainloop()
 
-    campos_router = ['SN/MAC', 'IP', 'NOMBRE DE RED', 'CONTRASEÑA', 'MARCA', 'INGRESO ONU', 'CODIGO DE BARRA']
+  
 
-    campos_router_widgets = []
-
-    # Función para mostrar los campos del router
-    def mostrar_campos_router():
-        for campo in campos_router:
-            etiqueta = tk.Label(ventana_secundaria, text=campo)
-            etiqueta.pack()
-
-            entrada = tk.Entry(ventana_secundaria)
-            entrada.pack()
-
-            campos_router_widgets.append((etiqueta, entrada))
-
-    # Función para ocultar los campos del router
-    def ocultar_campos_router():
-        for etiqueta, entrada in campos_router_widgets:
-            etiqueta.pack_forget()
-            entrada.pack_forget()
+   
 
     ventana_secundaria.mainloop()
 
